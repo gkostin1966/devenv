@@ -1,0 +1,10 @@
+---
+services:
+  app:
+    image: devenv
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - .:/devenv
+
