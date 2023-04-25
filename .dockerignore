@@ -2,5 +2,8 @@
 *
 
 # Except
+!templates
+!.gitconfig
+!.railsrc
 !Gemfile
 

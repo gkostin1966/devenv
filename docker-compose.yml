@@ -1,6 +1,6 @@
 ---
 services:
-  app:
+  devenv:
     image: devenv
     build:
       dockerfile: Dockerfile

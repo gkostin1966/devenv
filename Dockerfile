@@ -7,6 +7,7 @@ ARG GID=1000
 RUN DEBIAN_FRONTEND=noninteractive \
     apt-get update && \
     apt-get -y install --no-install-recommends \
+      nodejs \
       git \
       wget \
       vim

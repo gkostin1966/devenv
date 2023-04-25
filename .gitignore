@@ -1,4 +1,13 @@
-.bundle
-Gemfile.lock
+# Ignore Everything
+/*
 
-
+# Except
+!templates/
+!.dockerignore
+!.gitconfig
+!.gitignore
+!.railsrc
+!docker-compose.yml
+!Dockerfile
+!Gemfile
+!README.md

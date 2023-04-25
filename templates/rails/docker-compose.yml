@@ -1,0 +1,89 @@
+---
+services:
+  app:
+    depends_on:
+      - db
+      - solr
+      - redis
+    image: app
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "3000:3000"
+      - "1234:1234" # RubyMine
+      - "26162:26162" # RubyMine
+    volumes:
+      - .:/opt/app
+      - data:/var/opt/app/data
+      - gems:/var/opt/app/gems
+  resque:
+    depends_on:
+      - db
+      - solr
+      - redis
+    image: app
+    ports:
+      - "8282:8282"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - .:/opt/app
+      - data:/var/opt/app/data
+      - gems:/var/opt/app/gems
+    healthcheck:
+      disable: true
+    stop_signal: SIGQUIT
+    command: bundle exec rake resque:pool
+  resque-web:
+    depends_on:
+      - redis
+    image: app
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/opt/app
+      - gems:/var/opt/app/gems
+    healthcheck:
+      disable: true
+    command: bundle exec resque-web -p 8080 -r redis:6379 -F
+  db:
+    ports:
+      - "5432:5432"
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data/db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  solr:
+    image: solr:8-slim
+    ports:
+      - "8983:8983"
+    environment:
+      - SOLR_JAVA_MEM=-Xms1024m -Xmx1024m
+      - SOLR_HEAP=1024m
+    volumes:
+      - solr-conf:/opt/solr/server/solr/configsets/app
+      - solr-data:/var/solr
+  redis:
+    image: redis:6-buster
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+volumes:
+  data:
+    driver_opts:
+      type: none
+      device: ${PWD}/data
+      o: bind
+  gems:
+  db-data:
+  solr-conf:
+    driver_opts:
+      type: none
+      device: ${PWD}/solr
+      o: bind
+  solr-data:
+  redis-data:
